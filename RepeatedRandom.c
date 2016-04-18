@@ -139,10 +139,10 @@ int main(int argc, char *argv[]) {
     filename = argv[1];
   }
   else {
-    filename = "inputfile.txt";
+    filename = "./input/in1.txt";
   }
 
-  FILE* fp = fopen("inputfile.txt", "r");
+  FILE* fp = fopen(filename, "r");
   if(!fp) {
     perror("File opening failed");
     return EXIT_FAILURE;
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
 
   if (ferror(fp))
   puts("I/O error when reading");
-  else if (feof(fp))
+  // else if (feof(fp))
   // puts("End of file reached successfully");
   fclose(fp);
 
