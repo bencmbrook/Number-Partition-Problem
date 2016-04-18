@@ -64,6 +64,8 @@ void insertNode(maxHeap *hp, long long data) {
   node nd;
   nd.data = data;
 
+  printf("Inserting %lld\n", data);
+
   int i = (hp->size)++;
   while(i && nd.data > hp->elem[PARENT(i)].data) {
     hp->elem[i] = hp->elem[PARENT(i)];
@@ -82,7 +84,7 @@ is never violated
 long long deleteNode(maxHeap *hp) {
   if(hp->size) {
     long long data = hp->elem[0].data;
-    printf("Deleting node %lld\n\n", hp->elem[0].data);
+    printf("Deleting node %lld\n", hp->elem[0].data);
     hp->elem[0] = hp->elem[--(hp->size)];
     hp->elem = realloc(hp->elem, hp->size * sizeof(node));
     heapify(hp, 0);
@@ -117,20 +119,18 @@ int * generateSolution() {
   return S;
 }
 
-// Returns the residue
-int KK(int* A) {
-  // qsort(A, sizeA, sizeof(int), compare_ints);
-  for (size_t i = 0; i < sizeA; i+=2) {
-    if (*(A+i)>*(A+i+1)) {
-      *(A+i)+=*(A+i+1);
-      *(A+i+1)=0;
-    }
-    else {
-      *(A+i+1)+=*(A+i);
-      *(A+i)=0;
-    }
+// Karmarkar Karp Algorithm Using Max Heap
+long long KK(maxHeap *hp) {
+  // Reinsert the difference between the max elt and second-max elt
+  while (hp->size>1) {
+    printf("Heap Size: %d\n", hp->size);
+    long long one = deleteNode(hp);
+    long long two = deleteNode(hp);
+    insertNode(hp, one-two);
+    printf("\n");
   }
-  return 0; // should return residue
+  // Return the last elt
+  return deleteNode(hp); // Residue
 }
 
 int main(int argc, char *argv[]) {
@@ -168,17 +168,11 @@ int main(int argc, char *argv[]) {
       counter++;
       dataString[counter] = '\0';
       data = atoll(dataString);
-      printf("%lld\n", data);
       // Put in heap
       insertNode(&hp, data);
       counter = 0;
     }
   }
-
-  for (size_t i = 0; i < sizeA; i++) {
-    long long min = deleteNode(&hp);
-  }
-
 
   if (ferror(fp))
   puts("I/O error when reading");
@@ -187,6 +181,8 @@ int main(int argc, char *argv[]) {
 
   fclose(fp);
 
+  long long residue = KK(&hp);
+  printf("%lld\n", residue);
 
   int * S = generateSolution();
 
