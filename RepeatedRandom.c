@@ -174,17 +174,12 @@ int main(int argc, char *argv[]) {
   if (ferror(fp))
   puts("I/O error when reading");
   else if (feof(fp))
-  puts("End of file reached successfully");
-
+  // puts("End of file reached successfully");
   fclose(fp);
 
+  // Get the residue
   long long residue = KK(&hp);
+  printf("Residue is %lld\n", residue);
 
-  printf("%lld\n", residue);
-
-  int * S = generateSolution();
-
-  // TODO generate A randomly
-  // TODO KK on A
-
+  // int * S = generateSolution();
 }
