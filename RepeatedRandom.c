@@ -45,7 +45,7 @@ In case of deletion of a node, or creating a max heap from an array, heap proper
 may be violated. In such cases, heapify function can be called to make sure that
 heap property is never violated
 */
-void heapify(maxHeap *hp, int i) {
+void heapify(maxHeap *hp, long long i) {
   long long largest = (LCHILD(i) < hp->size && hp->elem[LCHILD(i)].data > hp->elem[i].data) ? LCHILD(i) : i;
   if(RCHILD(i) < hp->size && hp->elem[RCHILD(i)].data > hp->elem[largest].data) {
     largest = RCHILD(i);
@@ -61,10 +61,17 @@ Function to insert a node into the max heap, by allocating space for that node i
 heap and also making sure that the heap property and shape propety are never violated.
 */
 void insertNode(maxHeap *hp, long long data) {
+  // allocating space
+  if(hp->size) {
+      hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node)) ;
+  } else {
+      hp->elem = malloc(sizeof(node)) ;
+  }
+
   node nd;
   nd.data = data;
 
-  printf("Inserting %lld\n", data);
+  // printf("Inserting %lld\n", data);
 
   int i = (hp->size)++;
   while(i && nd.data > hp->elem[PARENT(i)].data) {
@@ -84,26 +91,16 @@ is never violated
 long long deleteNode(maxHeap *hp) {
   if(hp->size) {
     long long data = hp->elem[0].data;
-    printf("Deleting node %lld\n", hp->elem[0].data);
+    // printf("Deleting node %lld\n", hp->elem[0].data);
     hp->elem[0] = hp->elem[--(hp->size)];
     hp->elem = realloc(hp->elem, hp->size * sizeof(node));
     heapify(hp, 0);
     return data;
   } else {
-    printf("\nMax Heap is empty!\n");
+    // printf("\nMax Heap is empty!\n");
     free(hp->elem);
     return 0;
   }
-}
-
-int compare_ints(const void* a, const void* b)
-{
-  int arg1 = *(const int*)a;
-  int arg2 = *(const int*)b;
-
-  if (arg1 < arg2) return -1;
-  if (arg1 > arg2) return 1;
-  return 0;
 }
 
 int * generateSolution() {
@@ -123,11 +120,11 @@ int * generateSolution() {
 long long KK(maxHeap *hp) {
   // Reinsert the difference between the max elt and second-max elt
   while (hp->size>1) {
-    printf("Heap Size: %d\n", hp->size);
+    // printf("Heap Size: %d\n", hp->size);
     long long one = deleteNode(hp);
     long long two = deleteNode(hp);
     insertNode(hp, one-two);
-    printf("\n");
+    // printf("\n");
   }
   // Return the last elt
   return deleteNode(hp); // Residue
@@ -182,6 +179,7 @@ int main(int argc, char *argv[]) {
   fclose(fp);
 
   long long residue = KK(&hp);
+
   printf("%lld\n", residue);
 
   int * S = generateSolution();
