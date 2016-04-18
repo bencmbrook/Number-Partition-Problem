@@ -46,7 +46,7 @@ may be violated. In such cases, heapify function can be called to make sure that
 heap property is never violated
 */
 void heapify(maxHeap *hp, int i) {
-  int largest = (LCHILD(i) < hp->size && hp->elem[LCHILD(i)].data > hp->elem[i].data) ? LCHILD(i) : i;
+  long long largest = (LCHILD(i) < hp->size && hp->elem[LCHILD(i)].data > hp->elem[i].data) ? LCHILD(i) : i;
   if(RCHILD(i) < hp->size && hp->elem[RCHILD(i)].data > hp->elem[largest].data) {
     largest = RCHILD(i);
   }
@@ -60,7 +60,7 @@ void heapify(maxHeap *hp, int i) {
 Function to insert a node into the max heap, by allocating space for that node in the
 heap and also making sure that the heap property and shape propety are never violated.
 */
-void insertNode(maxHeap *hp, int data) {
+void insertNode(maxHeap *hp, long long data) {
   node nd;
   nd.data = data;
 
@@ -79,15 +79,18 @@ It shall remove the root node, and place the last node in its place
 and then call heapify function to make sure that the heap property
 is never violated
 */
-void deleteNode(maxHeap *hp) {
+long long deleteNode(maxHeap *hp) {
   if(hp->size) {
+    long long data = hp->elem[0].data;
     printf("Deleting node %lld\n\n", hp->elem[0].data);
     hp->elem[0] = hp->elem[--(hp->size)];
     hp->elem = realloc(hp->elem, hp->size * sizeof(node));
     heapify(hp, 0);
+    return data;
   } else {
     printf("\nMax Heap is empty!\n");
     free(hp->elem);
+    return 0;
   }
 }
 
@@ -172,6 +175,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  for (size_t i = 0; i < sizeA; i++) {
+    long long min = deleteNode(&hp);
+  }
+
 
   if (ferror(fp))
   puts("I/O error when reading");
@@ -179,6 +186,7 @@ int main(int argc, char *argv[]) {
   puts("End of file reached successfully");
 
   fclose(fp);
+
 
   int * S = generateSolution();
 
