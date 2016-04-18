@@ -56,34 +56,6 @@ void heapify(maxHeap *hp, int i) {
   }
 }
 
-
-/*
-Build a Max Heap given an array of numbers
-Instead of using insertNode() function n times for total complexity of O(nlogn),
-we can use the buildMaxHeap() function to build the heap in O(n) time
-*/
-void buildMaxHeap(maxHeap *hp, int *arr, int size) {
-  int i;
-
-  // Insertion into the heap without violating the shape property
-  for(i = 0; i < size; i++) {
-    if(hp->size) {
-      hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node));
-    } else {
-      hp->elem = malloc(sizeof(node));
-    }
-    node nd;
-    nd.data = arr[i];
-    hp->elem[(hp->size)++] = nd;
-  }
-
-  // Making sure that heap property is also satisfied
-  for(i = (hp->size - 1) / 2; i >= 0; i--) {
-    heapify(hp, i);
-  }
-}
-
-
 /*
 Function to insert a node into the max heap, by allocating space for that node in the
 heap and also making sure that the heap property and shape propety are never violated.
@@ -176,6 +148,9 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Set up max heap
+  maxHeap hp = initMaxHeap(sizeA);
+
   // Read values out of file and insert into heap
   int c; // note: int, not char, required to handle EOF
   long long data;
@@ -191,10 +166,12 @@ int main(int argc, char *argv[]) {
       dataString[counter] = '\0';
       data = atoll(dataString);
       printf("%lld\n", data);
-      // put in heap
+      // Put in heap
+      insertNode(&hp, data);
       counter = 0;
     }
   }
+
 
   if (ferror(fp))
   puts("I/O error when reading");
@@ -202,9 +179,6 @@ int main(int argc, char *argv[]) {
   puts("End of file reached successfully");
 
   fclose(fp);
-
-  // Set up max heap
-  maxHeap hp = initMaxHeap(sizeA);
 
   int * S = generateSolution();
 
