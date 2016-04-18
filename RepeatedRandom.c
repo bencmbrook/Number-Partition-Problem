@@ -1,45 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
 
-const int sizeA = 1000;
+const int sizeA = 100;
 const int maxIter = 25000;
 
-// Max Heap from http://robin-thomas.github.io/max-heap/
+// Max Heap based on http://robin-thomas.github.io/max-heap/
 #define LCHILD(x) 2 * x + 1
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 
 typedef struct node {
-    int data ;
-} node ;
+    int64_t data;
+} node;
 
 typedef struct maxHeap {
-    int size ;
-    node *elem ;
-} maxHeap ;
-
+    int size;
+    node *elem;
+} maxHeap;
 
 /*
     Function to initialize the max heap with size = 0
 */
 maxHeap initMaxHeap(int size) {
-    maxHeap hp ;
-    hp.size = 0 ;
-    hp.elem = malloc(size * sizeof(node)) ;
-    return hp ;
+    maxHeap hp;
+    hp.size = 0;
+    hp.elem = malloc(size * sizeof(node));
+    return hp;
 }
-
 
 /*
     Function to swap data within two nodes of the max heap using pointers
 */
 void swap(node *n1, node *n2) {
-    node temp = *n1 ;
-    *n1 = *n2 ;
-    *n2 = temp ;
+    node temp = *n1;
+    *n1 = *n2;
+    *n2 = temp;
 }
-
 
 /*
     Heapify function is used to make sure that the heap property is never violated
@@ -48,13 +46,13 @@ void swap(node *n1, node *n2) {
     heap property is never violated
 */
 void heapify(maxHeap *hp, int i) {
-    int largest = (LCHILD(i) < hp->size && hp->elem[LCHILD(i)].data > hp->elem[i].data) ? LCHILD(i) : i ;
+    int largest = (LCHILD(i) < hp->size && hp->elem[LCHILD(i)].data > hp->elem[i].data) ? LCHILD(i) : i;
     if(RCHILD(i) < hp->size && hp->elem[RCHILD(i)].data > hp->elem[largest].data) {
-        largest = RCHILD(i) ;
+        largest = RCHILD(i);
     }
     if(largest != i) {
-        swap(&(hp->elem[i]), &(hp->elem[largest])) ;
-        heapify(hp, largest) ;
+        swap(&(hp->elem[i]), &(hp->elem[largest]));
+        heapify(hp, largest);
     }
 }
 
@@ -65,23 +63,23 @@ void heapify(maxHeap *hp, int i) {
     we can use the buildMaxHeap() function to build the heap in O(n) time
 */
 void buildMaxHeap(maxHeap *hp, int *arr, int size) {
-    int i ;
+    int i;
 
     // Insertion into the heap without violating the shape property
     for(i = 0; i < size; i++) {
         if(hp->size) {
-            hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node)) ;
+            hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node));
         } else {
-            hp->elem = malloc(sizeof(node)) ;
+            hp->elem = malloc(sizeof(node));
         }
-        node nd ;
-        nd.data = arr[i] ;
-        hp->elem[(hp->size)++] = nd ;
+        node nd;
+        nd.data = arr[i];
+        hp->elem[(hp->size)++] = nd;
     }
 
     // Making sure that heap property is also satisfied
     for(i = (hp->size - 1) / 2; i >= 0; i--) {
-        heapify(hp, i) ;
+        heapify(hp, i);
     }
 }
 
@@ -91,15 +89,15 @@ void buildMaxHeap(maxHeap *hp, int *arr, int size) {
     heap and also making sure that the heap property and shape propety are never violated.
 */
 void insertNode(maxHeap *hp, int data) {
-    node nd ;
-    nd.data = data ;
+    node nd;
+    nd.data = data;
 
-    int i = (hp->size)++ ;
+    int i = (hp->size)++;
     while(i && nd.data > hp->elem[PARENT(i)].data) {
-        hp->elem[i] = hp->elem[PARENT(i)] ;
-        i = PARENT(i) ;
+        hp->elem[i] = hp->elem[PARENT(i)];
+        i = PARENT(i);
     }
-    hp->elem[i] = nd ;
+    hp->elem[i] = nd;
 }
 
 
@@ -111,13 +109,13 @@ void insertNode(maxHeap *hp, int data) {
 */
 void deleteNode(maxHeap *hp) {
     if(hp->size) {
-        printf("Deleting node %d\n\n", hp->elem[0].data) ;
-        hp->elem[0] = hp->elem[--(hp->size)] ;
-        hp->elem = realloc(hp->elem, hp->size * sizeof(node)) ;
-        heapify(hp, 0) ;
+        printf("Deleting node %lld\n\n", hp->elem[0].data);
+        hp->elem[0] = hp->elem[--(hp->size)];
+        hp->elem = realloc(hp->elem, hp->size * sizeof(node));
+        heapify(hp, 0);
     } else {
-        printf("\nMax Heap is empty!\n") ;
-        free(hp->elem) ;
+        printf("\nMax Heap is empty!\n");
+        free(hp->elem);
     }
 }
 
@@ -163,6 +161,8 @@ int KK(int* A) {
 int main(int argc, char *argv[]) {
   srand(time(0));
 
+  // Check for inputfile argument, otherwise run my generated input file
+  FILE* fp = NULL;
   if (argc > 1) {
     FILE* fp = fopen(argv[0], "r");
     if(!fp) {
@@ -178,8 +178,21 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  // Set up max heap
+  maxHeap hp = initMaxHeap(sizeA);
+
+  // Read values out of file and insert into heap
+  char c;
+  while((c = fgetc(fp)) != EOF) {
+    if (c != '\n') {
+      int64_t data = atoi(&c);
+      printf("%lld\n", data);
+    }
+  }
+
   int * S = generateSolution();
 
   // TODO generate A randomly
   // TODO KK on A
+  fclose(fp);
 }
