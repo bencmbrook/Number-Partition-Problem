@@ -158,17 +158,24 @@ int getResidueStd(long long *A, int *S) {
 }
 
 int getResiduePtn(long long *A, int *S) {
-  // Set up max heap
+  // Initialize max heap for KK processing
   maxHeap hp = initMaxHeap(sizeA);
 
+  // Initialize array of zeros
   long long Z[100];
   for (size_t i = 0; i < sizeA; i++) {
     Z[i]=0;
   }
-  long long residue = 0;
   for (size_t i = 0; i < sizeA; i++) {
-    printf("%d\n", Z[i]);
+    Z[S[i]]+=A[i];
   }
+  // Set up heap
+  for (size_t i = 0; i < sizeA; i++) {
+    insertNode(&hp, Z[i]);
+  }
+
+  // Run KK heuristic on prepartitioned values
+  long long residue = KK(&hp);
   return residue;
 }
 
