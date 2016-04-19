@@ -139,6 +139,7 @@ int main(int argc, char *argv[]) {
     filename = argv[1];
   }
   else {
+    printf("No input argument specified. Using input/in1.txt\n");
     filename = "./input/in1.txt";
   }
 
