@@ -8,6 +8,8 @@
 
 const int sizeA = 100;
 const int maxIter = 25000;
+const int numFiles = 3;
+const int numAlgs = 7;
 
 // Max Heap based on http://robin-thomas.github.io/max-heap/
 #define LCHILD(x) 2 * x + 1
@@ -104,6 +106,26 @@ long long deleteNode(maxHeap *hp) {
     free(hp->elem);
     return 0;
   }
+}
+
+// Based on http://codingstreet.com/create-csv-file-in-c/#
+void createCSV(char *filename,long long a[numFiles][numAlgs],int n,int m) {
+  printf("\n Creating %s.csv file",filename);
+  FILE *fp;
+  int i,j;
+  filename=strcat(filename,".csv");
+  fp=fopen(filename,"w+");
+
+  fprintf(fp,"trial, KK, RRStd, RRPtn, HCStd, HCPtn, SAStd, SAPtn");
+
+  for(i=0;i<m;i++){
+    fprintf(fp,"\n%d",i+1);
+    for(j=0;j<n;j++) {
+      fprintf(fp,",%lld ",a[i][j]);
+    }
+  }
+  fclose(fp);
+  printf("\n %sfile created",filename);
 }
 
 // Karmarkar Karp Algorithm Using Max Heap
@@ -332,8 +354,13 @@ long long SAPtn(long long *A) {
 int main(int argc, char *argv[]) {
   srand(time(0));
 
+  // Set up CSV files for recording data
+  long long allResidues[numFiles][numAlgs];
+  long long allTimes[numFiles][numAlgs];
+  char residueCSV[20] = "residueCSV";
+  char timeCSV[20] = "timeCSV";
 
-  for (size_t fileSuffix = 0; fileSuffix < 2; fileSuffix++) {
+  for (size_t fileSuffix = 0; fileSuffix < numFiles; fileSuffix++) {
     char filename[80];
     strcpy (filename,"./input/in");
     char numStr[15];
@@ -385,57 +412,73 @@ int main(int argc, char *argv[]) {
     clock_t start = clock(), diff;
     // Get the Karmarkar-Karp residue
     long long residueKK = KK(&hp);
-    printf("KK residue is %lld\n", residueKK);
     diff = clock() - start;
     int msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][0] = residueKK;
+    allTimes[fileSuffix][0] = (long long)msec;
+    printf("KK residue is %lld\n", residueKK);
     printf("KK took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Repeated Random residue - Standard
     start = clock();
     long long residueRRStd = RRStd(A);
-    printf("RRStd residue is %lld\n", residueRRStd);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][1] = residueRRStd;
+    allTimes[fileSuffix][1] = (long long)msec;
+    printf("RRStd residue is %lld\n", residueRRStd);
     printf("RRStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Repeated Random residue - Prepartition
     start = clock();
     long long residueRRPtn = RRPtn(A);
-    printf("RRPtn residue is %lld\n", residueRRPtn);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][2] = residueRRPtn;
+    allTimes[fileSuffix][2] = (long long)msec;
+    printf("RRPtn residue is %lld\n", residueRRPtn);
     printf("RRPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Hill Climbing residue - Standard
     start = clock();
     long long residueHCStd = HCStd(A);
-    printf("HCStd residue is %lld\n", residueHCStd);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][3] = residueHCStd;
+    allTimes[fileSuffix][3] = (long long)msec;
+    printf("HCStd residue is %lld\n", residueHCStd);
     printf("HCStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Hill Climbing residue - Prepartition
     start = clock();
     long long residueHCPtn = HCPtn(A);
-    printf("HCPtn residue is %lld\n", residueHCPtn);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][4] = residueHCPtn;
+    allTimes[fileSuffix][4] = (long long)msec;
+    printf("HCPtn residue is %lld\n", residueHCPtn);
     printf("HCPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Simulated Annealing residue - Standard
     start = clock();
     long long residueSAStd = SAStd(A);
-    printf("SAStd residue is %lld\n", residueSAStd);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][5] = residueSAStd;
+    allTimes[fileSuffix][5] = (long long)msec;
+    printf("SAStd residue is %lld\n", residueSAStd);
     printf("SAStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Simulated Annealing residue - Prepartition
     start = clock();
     long long residueSAPtn = SAPtn(A);
-    printf("SAPtn residue is %lld\n", residueSAPtn);
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    allResidues[fileSuffix][6] = residueSAPtn;
+    allTimes[fileSuffix][6] = (long long)msec;
+    printf("SAPtn residue is %lld\n", residueSAPtn);
     printf("SAPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
-}
+  }
+  createCSV(residueCSV,allResidues,numAlgs,numFiles);
+  createCSV(timeCSV,allTimes,numAlgs,numFiles);
 }
