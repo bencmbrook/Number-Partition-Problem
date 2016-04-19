@@ -118,7 +118,7 @@ long long KK(maxHeap *hp) {
 }
 
 // Helper functions for the next 3 algorithms
-int * generateSolution() {
+int * generateStdSolution() {
   static int S[sizeA];
   for (size_t i = 0; i < sizeA; i++) {
     int random_variable = rand();
@@ -131,12 +131,25 @@ int * generateSolution() {
   return S;
 }
 
+int * generatePtnSolution() {
+  static int S[sizeA];
+  for (size_t i = 0; i < sizeA; i++) {
+    S[i] = (rand() % (int)(100));
+  }
+  return S;
+}
+
 // int * generateNeighbourStdSolution(int *S) {
 //   static int tempS[sizeA];
 //   return tempS;
 // }
 
-int getResidue(long long *A, int *S) {
+// int * generateNeighbourPtnSolution(int *S) {
+//   static int tempS[sizeA];
+//   return tempS;
+// }
+
+int getResidueStd(long long *A, int *S) {
   long long residue = 0;
   for (size_t i = 0; i < sizeA; i++) {
     residue+= A[i]*S[i];
@@ -144,15 +157,30 @@ int getResidue(long long *A, int *S) {
   return residue;
 }
 
-// Repeated Random algorithm
-long long RR(long long *A) {
-  int * S = generateSolution();
-  long long residue = getResidue(A, S);
+int getResiduePtn(long long *A, int *S) {
+  // Set up max heap
+  maxHeap hp = initMaxHeap(sizeA);
+
+  long long Z[100];
+  for (size_t i = 0; i < sizeA; i++) {
+    Z[i]=0;
+  }
+  long long residue = 0;
+  for (size_t i = 0; i < sizeA; i++) {
+    printf("%d\n", Z[i]);
+  }
+  return residue;
+}
+
+// Repeated Random algorithm - Standard Solution
+long long RRStd(long long *A) {
+  int * S = generateStdSolution();
+  long long residue = getResidueStd(A, S);
   long long tempResidue;
   // Run this maxIter times
   for (size_t i = 0; i < maxIter; i++) {
-    int * tempS = generateNeighbourSolution(S);
-    tempResidue = getResidue(A, tempS);
+    int * tempS = generateStdSolution();
+    tempResidue = getResidueStd(A, tempS);
     if (llabs(tempResidue)<llabs(residue)) {
       residue = tempResidue;
       S = tempS;
@@ -161,15 +189,15 @@ long long RR(long long *A) {
   return llabs(residue);
 }
 
-// Hill Climbing algorithm
-long long HC(long long *A) {
-  int * S = generateSolution();
-  long long residue = getResidue(A, S);
+// Repeated Random algorithm - Prepartitioning Solution
+long long RRPtn(long long *A) {
+  int * S = generatePtnSolution();
+  long long residue = getResiduePtn(A, S);
   long long tempResidue;
   // Run this maxIter times
   for (size_t i = 0; i < maxIter; i++) {
-    int * tempS = generateSolution(); // this part changes TODO
-    tempResidue = getResidue(A, tempS);
+    int * tempS = generatePtnSolution();
+    tempResidue = getResiduePtn(A, tempS);
     if (llabs(tempResidue)<llabs(residue)) {
       residue = tempResidue;
       S = tempS;
@@ -177,6 +205,23 @@ long long HC(long long *A) {
   }
   return llabs(residue);
 }
+
+// // Hill Climbing algorithm - Standard Solution
+// long long HCStd(long long *A) {
+//   int * S = generateStdSolution();
+//   long long residue = getResidueStd(A, S);
+//   long long tempResidue;
+//   // Run this maxIter times
+//   for (size_t i = 0; i < maxIter; i++) {
+//     int * tempS = generateNeighbourStdSolution(S); // this part changes TODO
+//     tempResidue = getResidueStd(A, tempS);
+//     if (llabs(tempResidue)<llabs(residue)) {
+//       residue = tempResidue;
+//       S = tempS;
+//     }
+//   }
+//   return llabs(residue);
+// }
 
 int main(int argc, char *argv[]) {
   srand(time(0));
@@ -235,17 +280,21 @@ int main(int argc, char *argv[]) {
   long long residueKK = KK(&hp);
   printf("KK residue is %lld\n", residueKK);
 
-  // Get the Repeated Random residue
-  long long residueRR = RR(A);
-  printf("RR residue is %lld\n", residueRR);
+  // Get the Repeated Random residue - Standard
+  long long residueRRStd = RRStd(A);
+  printf("RRStd residue is %lld\n", residueRRStd);
+
+  // Get the Repeated Random residue - Prepartition
+  long long residueRRPtn = RRPtn(A);
+  printf("RRPtn residue is %lld\n", residueRRPtn);
 
   // Get the Hill Climbing residue
-  long long residueHC = HC(A);
-  printf("HC residue is %lld\n", residueHC);
+  // long long residueHCStd = HCStd(A);
+  // printf("HCStd residue is %lld\n", residueHCStd);
 
   // Get the Simulated Annealing residue
-  // long long residueSA = SA(A);
-  // printf("SA residue is %lld\n", residueSA);
+  // long long residueSAStd = SAStd(A);
+  // printf("SAStd residue is %lld\n", residueSAStd);
 
-  // int * S = generateSolution();
+  // int * S = generateStdSolution();
 }
