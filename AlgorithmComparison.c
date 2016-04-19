@@ -121,8 +121,7 @@ long long KK(maxHeap *hp) {
 int * generateStdSolution() {
   static int S[sizeA];
   for (size_t i = 0; i < sizeA; i++) {
-    int random_variable = rand();
-    if (random_variable > RAND_MAX/2) {
+    if (rand() > RAND_MAX/2) {
       S[i] = 1;
     } else {
       S[i] = -1;
@@ -139,15 +138,33 @@ int * generatePtnSolution() {
   return S;
 }
 
-// int * generateNeighbourStdSolution(int *S) {
-//   static int tempS[sizeA];
-//   return tempS;
-// }
+int * generateNeighbourStdSolution(int *S) {
+  // With probability 1/2 we swap some i between sets
+  int i = (rand() % (int)(100));
+  if (rand() > RAND_MAX/2) {
+    S[i]=-S[i];
+  }
+  // With probability 1/2 we swap some j between sets, where i!=j
+  if (rand() > RAND_MAX/2) {
+    int j = (rand() % (int)(100));
+    while (j==i) {
+      j = (rand() % (int)(100));
+    }
+    S[j]=-S[j];
+  }
+  return S;
+}
 
-// int * generateNeighbourPtnSolution(int *S) {
-//   static int tempS[sizeA];
-//   return tempS;
-// }
+int * generateNeighbourPtnSolution(int *S) {
+  int i = (rand() % (int)(100));
+  int j = (rand() % (int)(100));
+  // Let P[i]=j where P[i]!=j
+  while (S[i]==j) {
+    j = (rand() % (int)(100));
+  }
+  S[i]=j;
+  return S;
+}
 
 int getResidueStd(long long *A, int *S) {
   long long residue = 0;
@@ -213,22 +230,39 @@ long long RRPtn(long long *A) {
   return llabs(residue);
 }
 
-// // Hill Climbing algorithm - Standard Solution
-// long long HCStd(long long *A) {
-//   int * S = generateStdSolution();
-//   long long residue = getResidueStd(A, S);
-//   long long tempResidue;
-//   // Run this maxIter times
-//   for (size_t i = 0; i < maxIter; i++) {
-//     int * tempS = generateNeighbourStdSolution(S); // this part changes TODO
-//     tempResidue = getResidueStd(A, tempS);
-//     if (llabs(tempResidue)<llabs(residue)) {
-//       residue = tempResidue;
-//       S = tempS;
-//     }
-//   }
-//   return llabs(residue);
-// }
+// Hill Climbing algorithm - Standard Solution
+long long HCStd(long long *A) {
+  int * S = generateStdSolution();
+  long long residue = getResidueStd(A, S);
+  long long tempResidue;
+  // Run this maxIter times
+  for (size_t i = 0; i < maxIter; i++) {
+    int * tempS = generateNeighbourStdSolution(S);
+    tempResidue = getResidueStd(A, tempS);
+    if (llabs(tempResidue)<llabs(residue)) {
+      residue = tempResidue;
+      S = tempS;
+    }
+  }
+  return llabs(residue);
+}
+
+// Hill Climbing algorithm - Prepartitioning Solution
+long long HCPtn(long long *A) {
+  int * S = generatePtnSolution();
+  long long residue = getResiduePtn(A, S);
+  long long tempResidue;
+  // Run this maxIter times
+  for (size_t i = 0; i < maxIter; i++) {
+    int * tempS = generateNeighbourPtnSolution(S);
+    tempResidue = getResiduePtn(A, tempS);
+    if (llabs(tempResidue)<llabs(residue)) {
+      residue = tempResidue;
+      S = tempS;
+    }
+  }
+  return llabs(residue);
+}
 
 int main(int argc, char *argv[]) {
   srand(time(0));
@@ -295,9 +329,13 @@ int main(int argc, char *argv[]) {
   long long residueRRPtn = RRPtn(A);
   printf("RRPtn residue is %lld\n", residueRRPtn);
 
-  // Get the Hill Climbing residue
-  // long long residueHCStd = HCStd(A);
-  // printf("HCStd residue is %lld\n", residueHCStd);
+  // Get the Hill Climbing residue - Standard
+  long long residueHCStd = HCStd(A);
+  printf("HCStd residue is %lld\n", residueHCStd);
+
+  // Get the Hill Climbing residue - Prepartition
+  long long residueHCPtn = HCPtn(A);
+  printf("HCPtn residue is %lld\n", residueHCPtn);
 
   // Get the Simulated Annealing residue
   // long long residueSAStd = SAStd(A);
