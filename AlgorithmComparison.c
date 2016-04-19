@@ -297,6 +297,37 @@ long long SAStd(long long *A) {
   return llabs(residue);
 }
 
+// Simulated Annealing algorithm - Prepartitioning Solution
+long long SAPtn(long long *A) {
+  int * S = generatePtnSolution();
+  int * temptempS = S;
+  long long residue = getResiduePtn(A, S);
+  long long tempResidue;
+  long long temptempResidue = residue;
+  // Run this maxIter times
+  for (size_t i = 0; i < maxIter; i++) {
+    int * tempS = generateNeighbourPtnSolution(S);
+    tempResidue = getResiduePtn(A, tempS);
+    if (llabs(tempResidue)<llabs(residue)) {
+      residue = tempResidue;
+      S = tempS;
+    }
+    else {
+      long double TIter = powl(10,10)*powl((long double)0.8,(long double)i/300.0);
+      long double probability = exp(-((long double)llabs(tempResidue)-(long double)llabs(residue))/TIter);
+      if ( rand() < probability*RAND_MAX ) {
+        residue = tempResidue;
+        S = tempS;
+      }
+    }
+    if (llabs(residue)<llabs(temptempResidue)) {
+      temptempResidue = residue;
+      temptempS = S;
+    }
+  }
+  return llabs(residue);
+}
+
 int main(int argc, char *argv[]) {
   srand(time(0));
 
@@ -370,9 +401,11 @@ int main(int argc, char *argv[]) {
   long long residueHCPtn = HCPtn(A);
   printf("HCPtn residue is %lld\n", residueHCPtn);
 
-  // Get the Simulated Annealing residue
+  // Get the Simulated Annealing residue - Standard
   long long residueSAStd = SAStd(A);
   printf("SAStd residue is %lld\n", residueSAStd);
 
-  // int * S = generateStdSolution();
+  // Get the Simulated Annealing residue - Prepartition
+  long long residueSAPtn = SAPtn(A);
+  printf("SAPtn residue is %lld\n", residueSAPtn);
 }
