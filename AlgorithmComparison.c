@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 const int sizeA = 100;
 const int maxIter = 25000;
@@ -332,7 +333,7 @@ int main(int argc, char *argv[]) {
   srand(time(0));
 
 
-  for (size_t fileSuffix = 0; fileSuffix < 50; fileSuffix++) {
+  for (size_t fileSuffix = 0; fileSuffix < 2; fileSuffix++) {
     char filename[80];
     strcpy (filename,"./input/in");
     char numStr[15];
@@ -381,32 +382,60 @@ int main(int argc, char *argv[]) {
     // puts("End of file reached successfully");
     fclose(fp);
 
+    clock_t start = clock(), diff;
     // Get the Karmarkar-Karp residue
     long long residueKK = KK(&hp);
     printf("KK residue is %lld\n", residueKK);
+    diff = clock() - start;
+    int msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("KK took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Repeated Random residue - Standard
+    start = clock();
     long long residueRRStd = RRStd(A);
     printf("RRStd residue is %lld\n", residueRRStd);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("RRStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Repeated Random residue - Prepartition
+    start = clock();
     long long residueRRPtn = RRPtn(A);
     printf("RRPtn residue is %lld\n", residueRRPtn);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("RRPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Hill Climbing residue - Standard
+    start = clock();
     long long residueHCStd = HCStd(A);
     printf("HCStd residue is %lld\n", residueHCStd);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("HCStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Hill Climbing residue - Prepartition
+    start = clock();
     long long residueHCPtn = HCPtn(A);
     printf("HCPtn residue is %lld\n", residueHCPtn);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("HCPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Simulated Annealing residue - Standard
+    start = clock();
     long long residueSAStd = SAStd(A);
     printf("SAStd residue is %lld\n", residueSAStd);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("SAStd took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 
     // Get the Simulated Annealing residue - Prepartition
+    start = clock();
     long long residueSAPtn = SAPtn(A);
     printf("SAPtn residue is %lld\n", residueSAPtn);
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("SAPtn took %d seconds %d milliseconds\n\n", msec/1000, msec%1000);
 }
 }
