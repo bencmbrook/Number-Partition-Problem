@@ -8,7 +8,7 @@
 
 const int sizeA = 100;
 const int maxIter = 25000;
-const int numFiles = 3;
+const int numFiles = 50;
 const int numAlgs = 7;
 
 // Max Heap based on http://robin-thomas.github.io/max-heap/
