@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <math.h>
-#include <tgmath.h>
+#include <string.h>
 
 const int sizeA = 100;
 const int maxIter = 25000;
@@ -331,81 +331,82 @@ long long SAPtn(long long *A) {
 int main(int argc, char *argv[]) {
   srand(time(0));
 
-  // Check for inputfile argument, otherwise run my generated input file
-  char* filename;
-  if (argc > 1) {
-    filename = argv[1];
-  }
-  else {
-    printf("No input argument specified. Using input/in1.txt\n");
-    filename = "./input/in1.txt";
-  }
 
-  FILE* fp = fopen(filename, "r");
-  if(!fp) {
-    perror("File opening failed");
-    return EXIT_FAILURE;
-  }
+  for (size_t fileSuffix = 0; fileSuffix < 50; fileSuffix++) {
+    char filename[80];
+    strcpy (filename,"./input/in");
+    char numStr[15];
+    sprintf(numStr, "%zu", fileSuffix);
+    strcat (filename,numStr);
+    strcat (filename,".txt");
+    puts (filename);
 
-  // Set up max heap
-  maxHeap hp = initMaxHeap(sizeA);
-
-  // Read values out of file and insert into heap
-  long long A[sizeA];
-  int counterArray = 0;
-  int c; // note: int, not char, required to handle EOF
-  long long data;
-  char dataString[14];
-  int counterString = 0;
-  while ((c = fgetc(fp)) != EOF) { // standard C I/O file reading loop
-    if (c != '\n') {
-      dataString[counterString] = c;
-      counterString++;
+    FILE* fp = fopen(filename, "r");
+    if(!fp) {
+      perror("File opening failed");
+      return EXIT_FAILURE;
     }
-    else {
-      counterString++;
-      dataString[counterString] = '\0';
-      data = atoll(dataString);
-      // Put in heap
-      insertNode(&hp, data);
-      // Also put in array for other algorithms
-      A[counterArray] = data;
-      counterString = 0;
-      counterArray++;
+
+    // Set up max heap
+    maxHeap hp = initMaxHeap(sizeA);
+
+    // Read values out of file and insert into heap
+    long long A[sizeA];
+    int counterArray = 0;
+    int c; // note: int, not char, required to handle EOF
+    long long data;
+    char dataString[14];
+    int counterString = 0;
+    while ((c = fgetc(fp)) != EOF) { // standard C I/O file reading loop
+      if (c != '\n') {
+        dataString[counterString] = c;
+        counterString++;
+      }
+      else {
+        counterString++;
+        dataString[counterString] = '\0';
+        data = atoll(dataString);
+        // Put in heap
+        insertNode(&hp, data);
+        // Also put in array for other algorithms
+        A[counterArray] = data;
+        counterString = 0;
+        counterArray++;
+      }
     }
-  }
 
-  if (ferror(fp))
-  puts("I/O error when reading");
-  // else if (feof(fp))
-  // puts("End of file reached successfully");
-  fclose(fp);
+    if (ferror(fp))
+    puts("I/O error when reading");
+    // else if (feof(fp))
+    // puts("End of file reached successfully");
+    fclose(fp);
 
-  // Get the Karmarkar-Karp residue
-  long long residueKK = KK(&hp);
-  printf("KK residue is %lld\n", residueKK);
+    // Get the Karmarkar-Karp residue
+    long long residueKK = KK(&hp);
+    printf("KK residue is %lld\n", residueKK);
 
-  // Get the Repeated Random residue - Standard
-  long long residueRRStd = RRStd(A);
-  printf("RRStd residue is %lld\n", residueRRStd);
+    // Get the Repeated Random residue - Standard
+    long long residueRRStd = RRStd(A);
+    printf("RRStd residue is %lld\n", residueRRStd);
 
-  // Get the Repeated Random residue - Prepartition
-  long long residueRRPtn = RRPtn(A);
-  printf("RRPtn residue is %lld\n", residueRRPtn);
+    // Get the Repeated Random residue - Prepartition
+    long long residueRRPtn = RRPtn(A);
+    printf("RRPtn residue is %lld\n", residueRRPtn);
 
-  // Get the Hill Climbing residue - Standard
-  long long residueHCStd = HCStd(A);
-  printf("HCStd residue is %lld\n", residueHCStd);
+    // Get the Hill Climbing residue - Standard
+    long long residueHCStd = HCStd(A);
+    printf("HCStd residue is %lld\n", residueHCStd);
 
-  // Get the Hill Climbing residue - Prepartition
-  long long residueHCPtn = HCPtn(A);
-  printf("HCPtn residue is %lld\n", residueHCPtn);
+    // Get the Hill Climbing residue - Prepartition
+    long long residueHCPtn = HCPtn(A);
+    printf("HCPtn residue is %lld\n", residueHCPtn);
 
-  // Get the Simulated Annealing residue - Standard
-  long long residueSAStd = SAStd(A);
-  printf("SAStd residue is %lld\n", residueSAStd);
+    // Get the Simulated Annealing residue - Standard
+    long long residueSAStd = SAStd(A);
+    printf("SAStd residue is %lld\n", residueSAStd);
 
-  // Get the Simulated Annealing residue - Prepartition
-  long long residueSAPtn = SAPtn(A);
-  printf("SAPtn residue is %lld\n", residueSAPtn);
+    // Get the Simulated Annealing residue - Prepartition
+    long long residueSAPtn = SAPtn(A);
+    printf("SAPtn residue is %lld\n", residueSAPtn);
+}
 }

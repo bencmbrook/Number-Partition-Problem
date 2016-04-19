@@ -7,7 +7,7 @@ shutil.rmtree("input")
 os.mkdir("input")
 os.chdir("input")
 
-for x in range(1,inputSize+1):
+for x in range(0,inputSize):
     filename = "in" + str(x) + ".txt"
     f = open(filename, 'w')
     for i in range(0,100):
