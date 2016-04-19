@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
+#include <math.h>
+#include <tgmath.h>
 
 const int sizeA = 100;
 const int maxIter = 25000;
@@ -63,9 +65,9 @@ heap and also making sure that the heap property and shape propety are never vio
 void insertNode(maxHeap *hp, long long data) {
   // allocating space
   if(hp->size) {
-      hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node)) ;
+    hp->elem = realloc(hp->elem, (hp->size + 1) * sizeof(node)) ;
   } else {
-      hp->elem = malloc(sizeof(node)) ;
+    hp->elem = malloc(sizeof(node)) ;
   }
 
   node nd;
@@ -264,6 +266,37 @@ long long HCPtn(long long *A) {
   return llabs(residue);
 }
 
+// Simulated Annealing algorithm - Standard Solution
+long long SAStd(long long *A) {
+  int * S = generateStdSolution();
+  int * temptempS = S;
+  long long residue = getResidueStd(A, S);
+  long long tempResidue;
+  long long temptempResidue = residue;
+  // Run this maxIter times
+  for (size_t i = 0; i < maxIter; i++) {
+    int * tempS = generateNeighbourStdSolution(S);
+    tempResidue = getResidueStd(A, tempS);
+    if (llabs(tempResidue)<llabs(residue)) {
+      residue = tempResidue;
+      S = tempS;
+    }
+    else {
+      long double TIter = powl(10,10)*powl((long double)0.8,(long double)i/300.0);
+      long double probability = exp(-((long double)llabs(tempResidue)-(long double)llabs(residue))/TIter);
+      if ( rand() < probability*RAND_MAX ) {
+        residue = tempResidue;
+        S = tempS;
+      }
+    }
+    if (llabs(residue)<llabs(temptempResidue)) {
+      temptempResidue = residue;
+      temptempS = S;
+    }
+  }
+  return llabs(residue);
+}
+
 int main(int argc, char *argv[]) {
   srand(time(0));
 
@@ -338,8 +371,8 @@ int main(int argc, char *argv[]) {
   printf("HCPtn residue is %lld\n", residueHCPtn);
 
   // Get the Simulated Annealing residue
-  // long long residueSAStd = SAStd(A);
-  // printf("SAStd residue is %lld\n", residueSAStd);
+  long long residueSAStd = SAStd(A);
+  printf("SAStd residue is %lld\n", residueSAStd);
 
   // int * S = generateStdSolution();
 }
